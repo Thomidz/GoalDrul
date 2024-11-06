@@ -1,16 +1,6 @@
 <?php
 
-session_start(); // Start the session to access session variables
-
-// Check if the logout request has been made
-if (isset($_POST['logout'])) {
-    // Destroy the session and redirect to the login page
-    session_destroy();
-    header("Location: dashboard.php"); // Change this to the appropriate login page
-    exit();
-}
 include "service/apikey.php";
-
 $fixtures_url = 'https://v3.football.api-sports.io/fixtures';
 $league_ids = [39, 140, 61, 135, 78]; // Premier League, La Liga, Bundesliga, Serie A, Ligue 1
 
@@ -18,7 +8,7 @@ include "service/database.php";
 
 $ch = curl_init();
 
-$today = date('Y-m-d'); 
+$today = date('Y-m-d'); // Get today's date in 'YYYY-MM-DD' format
 
 function fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today) {
     $params = [
@@ -41,14 +31,14 @@ function fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today) {
         $output = '';
 
         if (!empty($data['response'])) {
-            $matches_found = false;
+            $matches_found = false; // Flag to track if matches are found
 
             foreach ($data['response'] as $match) {
                 $match_date = $match['fixture']['date'];
                 $formatted_date = date('d M Y, H:i', strtotime($match_date));
                 $match_day = date('Y-m-d', strtotime($match_date));
 
-            
+                // Only display matches for today
                 if ($match_day === $today) {
                     $home_team = $match['teams']['home']['name'];
                     $away_team = $match['teams']['away']['name'];
@@ -58,7 +48,8 @@ function fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today) {
                     $home_team_id = $match['teams']['home']['id'];
                     $away_team_id = $match['teams']['away']['id'];
 
-               
+                    // Display each match as a card
+                   // Inside the fetch_fixtures function, modify the card output like this:
                 $output .= "<div class='col-md-4 mt-2 d-flex'>
                 <div class='card shadow-sm flex-grow-1'>
                     <div class='card-body'>
@@ -74,7 +65,6 @@ function fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today) {
                     $matches_found = true;
                 }
             }
-
             if (!$matches_found) {
                 $output .= '<div class="col-12"><p>No matches scheduled for today.</p></div>';
             }
@@ -98,7 +88,7 @@ function fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -117,21 +107,17 @@ function fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today) {
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user"></i> Profile</a>
                         <ul class="dropdown-menu">
-                            <li>
-                            <a href="profile.php" class="dropdown-item">Profile</a> 
-                                <form action="" method="POST" class="d-inline">
-                                    <button type="submit" name="logout" class="dropdown-item">Logout</button>
-                                </form>
-                            </li>
+                            <li><a class="dropdown-item" href="register.php">Register</a></li>
+                            <li><a class="dropdown-item" href="login.php">Login</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="favoriteteam.php"><i class="fas fa-star"></i> Favorite Team</a>
+                        <a class="nav-link" href="#" id="favorite"><i class="fas fa-star"></i> Favorite Team</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="upcoming.php"><i class="fas fa-calendar-alt"></i> Upcoming Matches</a>
                     </li>
-                  
+                 
                 </ul>
             </div>
         </div>
@@ -154,94 +140,95 @@ function fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today) {
           </a>
           <a href="LserieA.php">
               <img src="assets/serie_a.png" alt="Serie A" class="img">
-          </a>
+            </a>
         </ul>
     </div>
 </nav>
 
 
-    <div class="container mt-5">
-        <h1 class="text-center">Today's Matches</h1>
 
+<div class="container mt-5">
+    
+    <h1 class="text-center mt-5 mb-5">Today's Matches</h1>
         <div id="matchCarousel" class="carousel slide mt-3" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="assets/pl.webp" class="d-block w-100" alt="Match Highlight 1">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Exciting Match Coming Up!</h5>
-                    <p>Premier League Next Game</p>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="assets/hq720.jpg" class="d-block w-100" alt="Match Highlight 1">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Exciting Match Coming Up!</h5>
+                        <p>Premier League Next Game</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="assets/library_upload_21_2020_04_996x664_manchester-united_b12ef1b.jpg" class="d-block w-100" alt="Match Highlight 1">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Exciting Match Coming Up!</h5>
+                        <p>La Liga Next Game</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="assets/202008150741-main.cropped_1597452087.jpg" class="d-block w-100" alt="Match Highlight 1">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Exciting Match Coming Up!</h5>
+                        <p>Serie A Next Game</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="assets/Report_0.jpg" class="d-block w-100" alt="Match Highlight 2">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Big Match Alert!</h5>
+                        <p>Bundesliga Next Game</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="assets/hq720 (1).jpg" class="d-block w-100" alt="Match Highlight 3">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Champions League Showdown!</h5>
+                        <p>Ligue 1 Next Game</p>
+                    </div>
                 </div>
             </div>
-            <div class="carousel-item">
-                <img src="assets/alaves-1-1-mallorca-_-laliga-23-24-match-highlights_24022024_210052-486f2c.webp" class="d-block w-100" alt="Match Highlight 1">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Exciting Match Coming Up!</h5>
-                    <p>La Liga Next Game</p>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="assets/Venezia-vs-Udinese.jpg" class="d-block w-100" alt="Match Highlight 1">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Exciting Match Coming Up!</h5>
-                    <p>Serie A Next Game</p>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="assets/hq720 (2).jpg" class="d-block w-100" alt="Match Highlight 2">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Big Match Alert!</h5>
-                    <p>Bundesliga Next Game</p>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="assets/image.png" class="d-block w-100" alt="Match Highlight 3">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Champions League Showdown!</h5>
-                    <p>Ligue 1 Next Game</p>
-                </div>
-            </div>
+            
+            <button class="carousel-control-prev" type="button" data-bs-target="#matchCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#matchCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
         </div>
-
-        <button class="carousel-control-prev" type="button" data-bs-target="#matchCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#matchCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-
-      
+        
         <?php foreach ($league_ids as $league_id): ?>
             <section class="mt-5">
-                <h2 class="text-center section-title">
+                <h2 class="section-title">
                     <?php
                     switch ($league_id) {
                         case 39:
                             echo 'Premier League';
                             break;
-                        case 140:
-                            echo 'La Liga';
-                            break;
-                        case 61:
-                            echo 'Bundesliga';
-                            break;
-                        case 135:
-                            echo 'Serie A';
-                            break;
-                        case 78:
-                            echo 'Ligue 1';
-                            break;
-                    }
-                    ?>
+                            case 140:
+                                echo 'La Liga';
+                                break;
+                                case 61:
+                                    echo 'Bundesliga';
+                                    break;
+                                    case 135:
+                                        echo 'Serie A';
+                                        break;
+                                        case 78:
+                                            echo 'Ligue 1';
+                                            break;
+                                            }
+                                            ?>
                 </h2>
-                <div class="d-flex flex-wrap justify-content-start gap-3 mt-3">
-                    <?php echo fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today); ?>
-                </div>
             </section>
+            <div class="d-flex text-center">
+                <?php echo fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today); ?>
+            </div>
         <?php endforeach; ?>
     </div>
+
 
     <footer class="text-center text-lg-start mt-5 pt-4">
         <div class="text-center p-3" style="background-color: #343a40;">
@@ -249,6 +236,7 @@ function fetch_fixtures($league_id, $api_key, $ch, $fixtures_url, $today) {
         </div>
     </footer>
 
+     <script src="java/sc.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
