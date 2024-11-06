@@ -1,0 +1,10 @@
+body {
+    background-image: url('assets/bggdf.jpg'); /* Ganti dengan path gambar Anda */
+    background-size: cover; /* Mengatur agar gambar menutupi seluruh background */
+    background-position: center; /* Mengatur posisi gambar di tengah */
+    background-repeat: no-repeat; /* Mencegah pengulangan gambar */
+    background-attachment: fixed; /* Membuat background tetap saat scrolling */
+    height: 100vh;
+    margin: 0;
+}
+
